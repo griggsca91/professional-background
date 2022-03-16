@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+<style>
+/* (A) STANDARD ROW HEIGHT */
+.vwrap, .vitem {
+  height: 30px;
+  line-height: 30px;
+}
+ 
+/* (B) FIXED WRAPPER */
+.vwrap {
+  overflow: hidden; /* HIDE SCROLL BAR */
+  background: #eee;
+}
+/* (C) TICKER ITEMS */
+.vitem { text-align: center; }
+ 
+/* (D) ANIMATION - MOVE ITEMS FROM TOP TO BOTTOM */
+/* CHANGE KEYFRAMES IF YOU ADD/REMOVE ITEMS */
+.vmove { position: relative; }
+@keyframes tickerv {
+  0% { bottom: 0; } /* FIRST ITEM */
+  30% { bottom: 30px; } /* SECOND ITEM */
+  60% { bottom: 60px; } /* THIRD ITEM */
+  90% { bottom: 90px; } /* FORTH ITEM */
+  100% { bottom: 0; } /* BACK TO FIRST */
+}
+.vmove {
+  animation-name: tickerv;
+  animation-duration: 10s;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(1, 0, .5, 0);
+}
+.vmove:hover { animation-play-state: paused; }
+
+/* (A) FIXED WRAPPER */
+.hwrap {
+  overflow: hidden; /* HIDE SCROLL BAR */
+  background: rgba(20,20,20,.1);
+}
+ 
+/* (B) MOVING TICKER WRAPPER */
+.hmove { display: flex; }
+
+/* (C) ITEMS - INTO A LONG HORIZONTAL ROW */
+.hitem {
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  text-align: center;
+}
+ 
+/* (D) ANIMATION - MOVE ITEMS FROM RIGHT TO LEFT */
+/* 4 ITEMS -400%, CHANGE THIS IF YOU ADD/REMOVE ITEMS */
+@keyframes tickerh {
+  0% { transform: translate3d(100%, 0, 0); }
+  100% { transform: translate3d(-300%, 0, 0); }
+}
+.hmove { animation: tickerh linear 30s infinite; }
+.hmove:hover { animation-play-state: paused; }
+
+</style>
+
+<div class="hwrap"><div class="hmove">
+  <div class="hitem">Current JIRA In Progress: POPS-2538</div>
+  <div class="hitem">No Blockers</div>
+  <div class="hitem">Next OOO: April 1-3</div>
+</div></div>
+
+</body>
+</html>
