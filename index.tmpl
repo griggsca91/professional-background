@@ -66,9 +66,9 @@
 </style>
 
 <div class="hwrap"><div class="hmove">
-  <div class="hitem">Current JIRA In Progress: POPS-2538</div>
-  <div class="hitem">No Blockers</div>
-  <div class="hitem">Next OOO: April 1-3</div>
+{{ range .News }}
+  <div class="hitem">{{ . }}</div>
+  {{ end }}
 </div></div>
 
 </body>
