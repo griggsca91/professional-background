@@ -5,11 +5,30 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"text/template"
 )
 
 type Data struct {
 	News []string
+}
+
+func readData() []string {
+	data, err := ioutil.ReadFile("feeds.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	lines := strings.Split(string(data), "\n")
+	filteredLines := make([]string, 0)
+	for _, line := range lines {
+		cleanedLine := strings.TrimSpace(line)
+		if len(cleanedLine) > 0 {
+			filteredLines = append(filteredLines, cleanedLine)
+		}
+	}
+
+	return filteredLines
 }
 
 func serveFiles(w http.ResponseWriter, r *http.Request) {
@@ -21,12 +40,10 @@ func serveFiles(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
+	news := readData()
+
 	data := Data{
-		News: []string{
-			"Current JIRA In Progress: POPS-2538",
-			"No Blockers",
-			"Next OOO: April 1-3",
-		},
+		News: news,
 	}
 
 	tmpl.Execute(w, data)

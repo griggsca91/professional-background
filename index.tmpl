@@ -58,7 +58,10 @@
 /* 4 ITEMS -400%, CHANGE THIS IF YOU ADD/REMOVE ITEMS */
 @keyframes tickerh {
   0% { transform: translate3d(100%, 0, 0); }
-  100% { transform: translate3d(-300%, 0, 0); }
+  100% { 
+  {{ $length := len .News }} 
+  transform: translate3d(-{{$length}}00%, 0, 0); 
+  }
 }
 .hmove { animation: tickerh linear 30s infinite; }
 .hmove:hover { animation-play-state: paused; }
@@ -68,7 +71,7 @@
 <div class="hwrap"><div class="hmove">
 {{ range .News }}
   <div class="hitem">{{ . }}</div>
-  {{ end }}
+{{ end }}
 </div></div>
 
 </body>
