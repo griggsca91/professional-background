@@ -41,7 +41,6 @@ func serveFiles(w http.ResponseWriter, r *http.Request) {
 		viper.Get("userEmail").(string),
 		viper.Get("accessToken").(string),
 	)
-	client.GetLatestTicket()
 
 	fmt.Println(r.URL.Path)
 	fileData, _ := ioutil.ReadFile("./index.tmpl")
@@ -52,6 +51,16 @@ func serveFiles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	news := readData()
+
+	ticket, _ := client.GetLatestBlockedTicket()
+	if ticket != "" {
+		news = append(news, fmt.Sprintf("Blocked Ticket: %s", ticket))
+	}
+
+	ticket, _ = client.GetLatestInProgressTicket()
+	if ticket != "" {
+		news = append(news, fmt.Sprintf("Current ticket in progress: %s", ticket))
+	}
 
 	data := Data{
 		News: news,
@@ -66,7 +75,7 @@ func main() {
 	viper.AddConfigPath(".")      // optionally look for config in the working directory
 	err := viper.ReadInConfig()   // Find and read the config file
 	if err != nil {               // Handle errors reading the config file
-		panic(fmt.Errorf("Fatal error config file: %w \n", err))
+		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
 
 	http.HandleFunc("/", serveFiles)

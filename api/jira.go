@@ -70,9 +70,10 @@ func (c JiraClient) getAccountID() (string, error) {
 
 // assignee in (61ba89ec599f18006a4e216e) AND status in (BLOCKED, In-progress)
 
-const jqlQuery = "assignee in (%s) AND status IN (BLOCKED, In-progress)"
+const jqlInprogressQuery = "assignee in (%s) AND status IN (In-progress)"
+const jqlBlockedQuery = "assignee in (%s) AND status IN (BLOCKED)"
 
-func (c JiraClient) GetLatestTicket() (string, error) {
+func (c JiraClient) getLatestTicket(query string) (string, error) {
 	accountID, err := c.getAccountID()
 	if err != nil {
 		return "", err
@@ -87,7 +88,7 @@ func (c JiraClient) GetLatestTicket() (string, error) {
 
 	encoded := base64.StdEncoding.EncodeToString([]byte(c.user + ":" + c.token))
 	params := url.Values{}
-	params.Add("jql", fmt.Sprintf(jqlQuery, accountID))
+	params.Add("jql", fmt.Sprintf(query, accountID))
 
 	req, err := http.NewRequest("GET", c.baseURL+rootURL+"/2/search?"+params.Encode(), nil)
 	if err != nil {
@@ -110,14 +111,31 @@ func (c JiraClient) GetLatestTicket() (string, error) {
 
 	var result struct {
 		Issues []struct {
-			Key string `json:"key"`
+			Key    string `json:"key"`
+			Fields struct {
+				Updated string `json:"updated"`
+			} `json:"fields"`
 		} `json:"issues"`
 	}
 	if err := json.Unmarshal(body, &result); err != nil {
+		fmt.Println("Err unmarshalling", err)
 		return "", err
+	}
+
+	if len(result.Issues) == 0 {
+		return "", nil
 	}
 
 	fmt.Printf("result %+v\n", result)
 
-	return "", nil
+	return result.Issues[0].Key, nil
+
+}
+
+func (c JiraClient) GetLatestInProgressTicket() (string, error) {
+	return c.getLatestTicket(jqlInprogressQuery)
+}
+
+func (c JiraClient) GetLatestBlockedTicket() (string, error) {
+	return c.getLatestTicket(jqlBlockedQuery)
 }
